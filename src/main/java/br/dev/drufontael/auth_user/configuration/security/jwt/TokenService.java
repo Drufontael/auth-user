@@ -42,7 +42,7 @@ public class TokenService {
 
 
         }catch (JwtException e){
-            throw new RuntimeException("Token inválido");
+            throw new InvalidTokenException("Invalid token");
         }
     }
 }
