@@ -30,6 +30,7 @@ public class SecurityConfig {
             .cors(cors->cors.configure(http))
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/h2-console/**","/users","/users/login").permitAll()
+                    .requestMatchers("users/manager/**").hasRole("ADMIN")
                     .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

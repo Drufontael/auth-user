@@ -21,8 +21,8 @@ public class GlobalHandlerException {
         return ResponseEntity.status(403).body(ErrorResponse.from(e.getMessage(),403, path));
     }
 
-    @ExceptionHandler(InvalidEmailFormatException.class)
-    public ResponseEntity<?> handleInvalidEmailFormatException(InvalidEmailFormatException e, HttpServletRequest request) {
+    @ExceptionHandler(InvalidEmailException.class)
+    public ResponseEntity<?> handleInvalidEmailFormatException(InvalidEmailException e, HttpServletRequest request) {
         String path = request.getRequestURI();
         log.error("Invalid email format: ", e);
         return ResponseEntity.status(400).body(ErrorResponse.from(e.getMessage(),400, path));

@@ -1,7 +1,7 @@
 package br.dev.drufontael.auth_user.domain.service;
 
 import br.dev.drufontael.auth_user.domain.exceptions.AccessDeniedException;
-import br.dev.drufontael.auth_user.domain.exceptions.InvalidEmailFormatException;
+import br.dev.drufontael.auth_user.domain.exceptions.InvalidEmailException;
 import br.dev.drufontael.auth_user.domain.exceptions.UserAlreadExistsException;
 import br.dev.drufontael.auth_user.domain.exceptions.UserNotFoundException;
 import br.dev.drufontael.auth_user.domain.model.Access;
@@ -20,7 +20,6 @@ import java.util.UUID;
 
 public class UserService implements UserManager {
 
-    private static final String REGEX_EMAIL = "^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})$";
     private final UserPersistence userPersistence;
 
     public UserService(UserPersistence userPersistence) {
@@ -29,7 +28,7 @@ public class UserService implements UserManager {
 
     @Override
     public User register(User user, Encoder encoder) {
-        if(!validateEmail(user.getEmail())) throw new InvalidEmailFormatException("Invalid email format");
+        validateEmail(user.getEmail());
         userPersistence.findByEmail(user.getEmail()).ifPresent(u -> {
             throw new UserAlreadExistsException(String.format("the email %s is already registered with another user.", user.getEmail()));
         });
@@ -40,7 +39,7 @@ public class UserService implements UserManager {
 
     @Override
     public User register(User user, Encoder encoder, Role role) {
-        if(!validateEmail(user.getEmail())) throw new InvalidEmailFormatException("Invalid email format");
+        validateEmail(user.getEmail());
         userPersistence.findByEmail(user.getEmail()).ifPresent(u -> {
             throw new UserAlreadExistsException(String.format("the email %s is already registered with another user.", user.getEmail()));
         });
@@ -64,7 +63,7 @@ public class UserService implements UserManager {
 
     @Override
     public Access loginByEmail(String email, String password, Encoder encoder) {
-        if(!validateEmail(email)) throw new InvalidEmailFormatException("Invalid email format");
+        validateEmail(email);
         User user = userPersistence.findByEmail(email).orElseThrow(()->new UserNotFoundException("User not found:"+email));
         if(!encoder.matches(password, user.getPassword())) throw new AccessDeniedException("Access denied");
         Role role=user.getRoles().stream().min(Role::compareTo).orElse(Role.GUEST);
@@ -121,7 +120,12 @@ public class UserService implements UserManager {
         return user;
     }
 
-    private boolean validateEmail(String email) {
-       return email.matches(REGEX_EMAIL);
+    private void validateEmail(String email)
+    {
+        String REGEX_EMAIL =
+                "^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})$";
+
+        if (email == null) throw new InvalidEmailException("Email cannot be null");
+        if(!email.matches(REGEX_EMAIL)) throw new InvalidEmailException("Invalid email format");
     }
 }

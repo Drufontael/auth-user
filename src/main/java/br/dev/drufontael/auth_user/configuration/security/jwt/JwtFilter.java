@@ -44,6 +44,8 @@ public class JwtFilter extends OncePerRequestFilter {
             }catch (Exception e){
                 log.error("Unexpected error in token validation: ", e);
             }
+        } else {
+            log.error("Token not found in request");
         }
         filterChain.doFilter(request, response);
     }
