@@ -53,9 +53,12 @@ public class UserService implements UserManager {
     public Access login(String username, String password, Encoder encoder) {
         User user = userPersistence.findByUsername(username).orElseThrow(()->new UserNotFoundException("User not found:"+username));
         if(!encoder.matches(password, user.getPassword())) throw new AccessDeniedException("Access denied");
-        Role role=user.getRoles().stream().min(Role::compareTo).orElse(Role.GUEST);
-        Date expirationTime = Date.from(LocalDateTime.now().plusMinutes(role.expiration()).atZone(ZoneId.systemDefault()).toInstant());
-        Map<String, Object> claims = Map.of("role", role.role, "email", user.getEmail());
+        int roleExpiration=user.getRoles().stream().map(Role::expiration).min(Integer::compareTo).orElse(5);
+        Date expirationTime = Date.from(LocalDateTime.now().plusMinutes(roleExpiration).atZone(ZoneId.systemDefault()).toInstant());
+        Map<String, Object> claims = Map.of(
+                "roles", user.getRoles().stream().map(Role::getRole).toList(),
+                "email", user.getEmail(),
+                "id", user.getId());
         user.getLogins().add(LocalDateTime.now());
         userPersistence.save(user);
         return Access.builder().subject(user.getUsername()).expiresAt(expirationTime).claims(claims).build();
@@ -66,9 +69,12 @@ public class UserService implements UserManager {
         validateEmail(email);
         User user = userPersistence.findByEmail(email).orElseThrow(()->new UserNotFoundException("User not found:"+email));
         if(!encoder.matches(password, user.getPassword())) throw new AccessDeniedException("Access denied");
-        Role role=user.getRoles().stream().min(Role::compareTo).orElse(Role.GUEST);
-        Date expirationTime = Date.from(LocalDateTime.now().plusMinutes(role.expiration()).atZone(ZoneId.systemDefault()).toInstant());
-        Map<String, Object> claims = Map.of("role", role.role,"username", user.getUsername());
+        int roleExpiration=user.getRoles().stream().map(Role::expiration).min(Integer::compareTo).orElse(5);
+        Date expirationTime = Date.from(LocalDateTime.now().plusMinutes(roleExpiration).atZone(ZoneId.systemDefault()).toInstant());
+        Map<String, Object> claims = Map.of(
+                "role",user.getRoles().stream().map(Role::getRole).toList(),
+                "username", user.getUsername(),
+                "id", user.getId());
         user.getLogins().add(LocalDateTime.now());
         userPersistence.save(user);
         return Access.builder().subject(user.getEmail()).expiresAt(expirationTime).claims(claims).build();

@@ -53,7 +53,6 @@ public class JwtFilter extends OncePerRequestFilter {
     private void setUserAsAuthenticated(User user) {
         UserDetails userDetails = org.springframework.security.core.userdetails.User
                 .withUsername(user.getUsername())
-                .password(user.getPassword())
                 .authorities(user.getRoles().stream().map(Role::getRole).toArray(String[]::new))
                 .build();
         UsernamePasswordAuthenticationToken authentication=

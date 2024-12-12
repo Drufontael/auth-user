@@ -2,18 +2,14 @@ package br.dev.drufontael.auth_user.configuration.security.jwt;
 
 import br.dev.drufontael.auth_user.domain.model.Access;
 import io.jsonwebtoken.*;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class TokenService {
-
-    private final SecretKeyGenerator secretKeyGenerator;
 
     public AcessToken generateToken(Access access) {
 
-        var key =secretKeyGenerator.getKey();
+        var key =SecretKeyGenerator.getKey();
 
         String token = Jwts
                 .builder()
@@ -27,7 +23,7 @@ public class TokenService {
     }
 
     public Access getAccess(AcessToken token) {
-        var key = secretKeyGenerator.getKey();
+        var key = SecretKeyGenerator.getKey();
         try {
             Claims build = Jwts.parserBuilder()
                     .setSigningKey(key)

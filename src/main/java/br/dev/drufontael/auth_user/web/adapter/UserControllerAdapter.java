@@ -1,6 +1,7 @@
 package br.dev.drufontael.auth_user.web.adapter;
 
 import br.dev.drufontael.auth_user.configuration.security.jwt.AcessToken;
+import br.dev.drufontael.auth_user.configuration.security.jwt.SecretKeyGenerator;
 import br.dev.drufontael.auth_user.configuration.security.jwt.TokenService;
 import br.dev.drufontael.auth_user.domain.exceptions.*;
 import br.dev.drufontael.auth_user.domain.model.Access;
@@ -17,6 +18,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.crypto.SecretKey;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -116,6 +119,19 @@ public class UserControllerAdapter {
             log.info("id {} deleted", id);
             return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/services/key")
+    public ResponseEntity<ResponseSecretKey> getKey() {
+        return ResponseEntity.ok(new ResponseSecretKey(SecretKeyGenerator.getKey()));
+    }
+
+    private class ResponseSecretKey {
+        public String key;
+        public ResponseSecretKey(SecretKey key) {
+            this.key = Base64.getEncoder().encodeToString(key.getEncoded());
+        }
+    }
+
 
     private record RoleDto(String role) {}
 

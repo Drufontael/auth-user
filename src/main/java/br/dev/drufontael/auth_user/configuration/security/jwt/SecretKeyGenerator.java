@@ -9,9 +9,9 @@ import javax.crypto.SecretKey;
 @Component
 public class SecretKeyGenerator {
 
-    private SecretKey key;
+    private static SecretKey key;
 
-    public SecretKey getKey() {
+    public static SecretKey getKey() {
         if(key == null) {
             key = Keys.secretKeyFor(io.jsonwebtoken.SignatureAlgorithm.HS256);
         }
