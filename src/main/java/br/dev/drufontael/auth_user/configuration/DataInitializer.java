@@ -29,6 +29,7 @@ public class DataInitializer {
     @PostConstruct
     private void init() {
         initRootUser();
+        initServices();
     }
 
     private void initRootUser() {
@@ -42,6 +43,20 @@ public class DataInitializer {
                     password(rootPassword).build();
             manager.register(root, encoder, Role.ADMIN);
             log.info("Root user created");
+        }
+    }
+
+    private void initServices() {
+        try {
+            manager.info("concierge");
+            log.info("Concierge user already exists");
+        } catch (UserNotFoundException e) {
+            User concierge = User.builder().
+                    username("concierge").
+                    email("SxV3T@example.com").
+                    password("123456").build();
+            manager.register(concierge, encoder, Role.SERVICE);
+            log.info("Concierge user created");
         }
     }
 }

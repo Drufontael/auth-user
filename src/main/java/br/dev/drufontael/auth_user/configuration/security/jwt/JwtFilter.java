@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -53,6 +54,7 @@ public class JwtFilter extends OncePerRequestFilter {
     private void setUserAsAuthenticated(User user) {
         UserDetails userDetails = org.springframework.security.core.userdetails.User
                 .withUsername(user.getUsername())
+                .password(user.getPassword())
                 .authorities(user.getRoles().stream().map(Role::getRole).toArray(String[]::new))
                 .build();
         UsernamePasswordAuthenticationToken authentication=
@@ -66,5 +68,11 @@ public class JwtFilter extends OncePerRequestFilter {
             return header.substring(7);
         }
         return null;
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String[] WHITELIST = {"/users","/users/login"};
+        return Arrays.stream(WHITELIST).anyMatch(request.getRequestURI()::equals);
     }
 }

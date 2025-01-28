@@ -26,7 +26,7 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("users")
 @RequiredArgsConstructor
 @Slf4j
 public class UserControllerAdapter {
@@ -129,6 +129,7 @@ public class UserControllerAdapter {
         public String key;
         public ResponseSecretKey(SecretKey key) {
             this.key = Base64.getEncoder().encodeToString(key.getEncoded());
+            System.out.println(this.key);
         }
     }
 

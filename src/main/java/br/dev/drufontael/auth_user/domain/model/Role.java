@@ -17,7 +17,7 @@ public enum Role {
 
     public int expiration() {
         return switch (this.role) {
-            case "ROLE_ADMIN" -> 15;
+            case "ROLE_ADMIN" -> 45;
             case "ROLE_USER" -> 60;
             case "ROLE_GUEST", "ROLE_SERVICE" -> 300;
             default -> 0;

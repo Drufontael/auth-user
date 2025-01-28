@@ -31,6 +31,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/h2-console/**","/users","/users/login").permitAll()
                     .requestMatchers("users/manager/**").hasRole("ADMIN")
+                    .requestMatchers("/users/services/**").hasRole("SERVICE")
                     .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
